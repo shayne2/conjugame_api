@@ -10,9 +10,15 @@ from sanic.response import json, text
 from typing import Dict
 from sanic_cors import CORS, cross_origin
 from inflect.conjugate import VerbConjugator
+from classify.classify_verb_form import VerbFormClassifier
+
 
 app = Sanic()
 CORS(app)
+
+conjugator = VerbConjugator()
+verb_classifier = VerbFormClassifier()
+
 
 @app.route('/conjugate', methods=['POST', 'OPTIONS'])
 async def post_endpoint(request: request) -> response:
@@ -28,9 +34,13 @@ async def inflect(body: Dict) -> str:
     if not valid_post_body(body):
         return ValueError("Post called with invalid body")
     before, after = body['context']
-    verb = body['verb']
-    conjugator = VerbConjugator(beforere, verb, after)
-    return conjugator.conjugate_verb()
+
+
+    infinitive = body['verb']
+    verb_form = verb_classifier.classify_by_frame(before, after)
+
+    inflected_token = conjugator.conjugate_verb(infinitive, verb_form)
+    return inflected_token
 
 def valid_post_body(body: Dict) -> bool:
     return 'context' in body and 'verb' in body and len(body["context"]) == 2

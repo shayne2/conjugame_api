@@ -1,14 +1,7 @@
 #!/usr/bin/env python3
 
-from enum import Enum
+from enum import Enum, auto
 from typing import NamedTuple
-
-
-class VerbForm(NamedTuple):
-    mood: Mood
-    tempo: Tempo
-    person: Person
-    number: Number
 
 
 class Mood(Enum):
@@ -47,3 +40,19 @@ class Person(Enum):
 class Number(Enum):
     SINGULAR = 0
     PLURAL = 1
+
+
+class VerbForm(NamedTuple):
+    mood: Mood
+    tempo: Tempo
+    person: Person
+    number: Number
+
+
+def person_to_int(val: Person):
+    lookup = (Person.FIRST, Person.THIRD)
+    return lookup.index(val)
+
+def number_to_int(val: Number):
+    lookup = (Number.SINGULAR, Number.PLURAL)
+    return lookup.index(val)

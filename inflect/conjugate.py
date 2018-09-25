@@ -1,32 +1,65 @@
 #!/usr/bin/env python3
 
-from data_structs.verbs import VerbForm, Mood, Tempo, Person, Number
-from classify.verbs import VerbFormClassifier
+from data_structs.verbs import VerbForm, Mood, Tempo, Person, Number, \
+    person_to_int, number_to_int
+from typing import Dict
 
 class VerbConjugator:
-    def __init__(self, before: str, verb: str, after: str) -> None:
-        self.infinitive = verb
+    def __init__(self) -> None:
+        # load from text file
+        self.present_indicative_lookup = {
+            'ar': [
+                [
+                    'o',
+                    'a'
+                ],
+                [
+                    'amos',
+                    'am'
+                ]
+            ],
+            'er': [
+                [
+                    'o',
+                    'e'
+                ],
+                [
+                    'emos',
+                    'em'
+                ]
+            ],
+            'ir': [
+                [
+                    'o',
+                    'e'
+                ],
+                [
+                    'imos',
+                    'em'
+                ]
+            ]
+        }
+        self.present_indicative_irregulars = {}
 
-        self.frame = "{} _ {}".format(before, after)
-        self.verb_form = self.get_verb_form()
-
-    def get_verb_form(self) -> VerbForm:
-        classifier = VerbFormClassifier(self.frame)
-        return classifer.get_verb_form()
-
-    def conjugate_verb(self) -> str:
-        mood = self.verb_form.mood
-        if mood == Mood.INDICATIVE
-            return self.conjugate_indicative()
+    def conjugate_verb(self, infinitive: str, verb_form: VerbForm) -> str:
+        mood = verb_form.mood
+        if mood == Mood.INDICATIVE:
+            return self.conjugate_indicative(infinitive, verb_form)
         elif mood == Mood.SUBJUNCTIVE:
-            return self.conjugate_subjunctive()
+            return self.conjugate_subjunctive(infinitive, verb_form)
         else:
-            return self.conjugate_imperative()
+            return self.conjugate_imperative(infinitive, verb_form)
 
-    def conjugate_indicative(self) -> str:
-        tempo = self.verb_form.tempo
-        if tempo == Tempo.PRESENT
-            return self.conjugate_indicative_simple_present()
+    def conjugate_indicative(self, infinitive: str, verb_form: VerbForm) -> str:
+        tempo = verb_form.tempo
+        if tempo == Tempo.PRESENT:
+            return self.conjugate_by_number_and_person(
+                infinitive,
+                number_to_int(verb_form.number),
+                person_to_int(verb_form.person),
+                self.present_indicative_lookup,
+                self.present_indicative_irregulars
+            )
         elif tempo == Tempo.PRETERITE_PERFECT:
             raise NotImplementedError
         elif tempo == Tempo.PRETERITE_IMPERFECT:
@@ -46,45 +79,37 @@ class VerbConjugator:
         else:
             raise NotImplementedError
 
-    def conjugate_indicative_simple_present(self) -> str:
-        # Put this somewhere else
-        lookup = {
-            'ar': [
-                'o',
-                'a',
-                'amos',
-                'am'
-            ]
-            'er': [
-                'o',
-                'e',
-                'emos',
-                'em'
-            ]
-            'ir': [
-                'o',
-                'e',
-                'imos',
-                'em'
-            ]
-        }
-        last_two_letters = self.infinitive[-2:]
-        if last_two_letters not in lookup:
-            raise ValueError("Not a valid infinitive supplied")
-        person = self.verb_form.person
-        number = self.verb_form.number
-        person_number_idx = person + 2 * number
-        suffix = lookup[last_two_letters][person_number_idx]
-        return "{}{}".format(self.infinitive[:-2], suffix)
+    def conjugate_by_number_and_person(
+        self,
+        infinitive: str,
+        number: int,
+        person: int,
+        regular_suffixes: Dict,
+        irregulars: Dict
+    ) -> str:
 
-    def get_past_participle(self) -> str:
+        if infinitive in irregulars:
+            return irregulars[infinitive][number][person]
+
+        last_two_letters = infinitive[-2:]
+        if last_two_letters not in regular_suffixes:
+            raise ValueError("Invalid infinitive provided")
+
+        suffix = regular_suffixes[last_two_letters][number][person]
+        stem = infinitive[:-2]
+        return "{}{}".format(stem, suffix)
+
+    def get_past_participle(self, verb: str) -> str:
         raise NotImplementedError
 
-    def get_present_progressive(self) -> str:
+    def get_present_progressive(self, verb: str) -> str:
         raise NotImplementedError
 
-    def conjugate_subjunctive(self) -> str:
+    def conjugate_subjunctive(self, verb: str, verb_form: VerbForm) -> str:
         raise NotImplementedError
 
-    def conjugate_imperative(self) -> str:
+    def conjugate_imperative(self, verb: str, verb_form: VerbForm) -> str:
         raise NotImplementedError
+
+
+# TODO: Custom exception for bad state of mood + tempo combinations
