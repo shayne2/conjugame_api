@@ -3,43 +3,47 @@
 from data_structs.verbs import VerbForm, Mood, Tempo, Person, Number, \
     person_to_int, number_to_int
 from typing import Dict
+import json
+
+"""
+https://en.wikibooks.org/wiki/Portuguese/Present_tense_irregular_verbs
+TODO:
+
+CABER
+CRER
+DAR
+DIZER
+DORMIR
+FAZER
+HAVER
+IR
+LER
+MEDIR
+OUVIR
+PEDIR
+PERDER
+PODER
+PÔR
+QUERER
+RIR
+SABER
+SEGUIR
+SERVIR
+SENTIR
+TER
+TRAZER
+VALER
+VER
+VIR
+"""
 
 class VerbConjugator:
     def __init__(self) -> None:
         # load from text file
-        self.present_indicative_lookup = {
-            'ar': [
-                [
-                    'o',
-                    'a'
-                ],
-                [
-                    'amos',
-                    'am'
-                ]
-            ],
-            'er': [
-                [
-                    'o',
-                    'e'
-                ],
-                [
-                    'emos',
-                    'em'
-                ]
-            ],
-            'ir': [
-                [
-                    'o',
-                    'e'
-                ],
-                [
-                    'imos',
-                    'em'
-                ]
-            ]
-        }
-        self.present_indicative_irregulars = {}
+        with open('rules/regular_suffixes/present_indicative.json') as suffix_file:
+            self.present_indicative_lookup = json.load(suffix_file)
+        with open('rules/irregular_conjugations/present_indicative.json') as irreg_file:
+            self.present_indicative_irregulars = json.load(irreg_file)
 
     def conjugate_verb(self, infinitive: str, verb_form: VerbForm) -> str:
         mood = verb_form.mood
@@ -89,7 +93,10 @@ class VerbConjugator:
     ) -> str:
 
         if infinitive in irregulars:
-            return irregulars[infinitive][number][person]
+            irregular_conjugation =  \
+                irregulars[infinitive][number][person]
+            if irregular_conjugation:
+                return irregular_conjugation
 
         last_two_letters = infinitive[-2:]
         if last_two_letters not in regular_suffixes:
