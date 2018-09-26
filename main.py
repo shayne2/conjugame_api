@@ -46,4 +46,4 @@ def valid_post_body(body: Dict) -> bool:
     return 'context' in body and 'verb' in body and len(body["context"]) == 2
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=80)

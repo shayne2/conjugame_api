@@ -5,38 +5,6 @@ from data_structs.verbs import VerbForm, Mood, Tempo, Person, Number, \
 from typing import Dict
 import json
 
-"""
-https://en.wikibooks.org/wiki/Portuguese/Present_tense_irregular_verbs
-TODO:
-
-CABER
-CRER
-DAR
-DIZER
-DORMIR
-FAZER
-HAVER
-IR
-LER
-MEDIR
-OUVIR
-PEDIR
-PERDER
-PODER
-PÔR
-QUERER
-RIR
-SABER
-SEGUIR
-SERVIR
-SENTIR
-TER
-TRAZER
-VALER
-VER
-VIR
-"""
-
 class VerbConjugator:
     def __init__(self) -> None:
         # load from text file
@@ -106,6 +74,7 @@ class VerbConjugator:
         stem = infinitive[:-2]
         return "{}{}".format(stem, suffix)
 
+    # WHICH??
     def get_past_participle(self, verb: str) -> str:
         raise NotImplementedError
 
