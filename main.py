@@ -2,7 +2,7 @@
 
 import json as json_lib
 import urllib.parse
-# import ssl
+import ssl
 
 from sanic import Sanic, request, response
 from sanic.exceptions import abort
@@ -46,9 +46,9 @@ def valid_post_body(body: Dict) -> bool:
     return 'context' in body and 'verb' in body and len(body["context"]) == 2
 
 if __name__ == "__main__":
-    # context = ssl.create_default_context(purpose=ssl.Purpose.CLIENT_AUTH)
-    # context.load_cert_chain(
-    #     "/app/ssl/apache-selfsigned.crt",
-    #     keyfile="/app/ssl/apache-selfsigned.key"
-    # )
-    app.run(host="0.0.0.0", port=80)
+    context = ssl.create_default_context(purpose=ssl.Purpose.CLIENT_AUTH)
+    context.load_cert_chain(
+        "/app/ssl/apache-selfsigned.crt",
+        keyfile="/app/ssl/apache-selfsigned.key"
+    )
+    app.run(host="0.0.0.0", port=80, ssl=context)
