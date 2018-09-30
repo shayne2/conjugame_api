@@ -36,7 +36,7 @@ async def inflect(body: Dict) -> str:
 
 
     infinitive = body['verb']
-    verb_form = verb_classifier.classify_by_frame(before, after)
+    verb_form = verb_classifier.classify_by_frame(before, infinitive, after)
 
     inflected_token = conjugator.conjugate_verb(infinitive, verb_form)
     return inflected_token

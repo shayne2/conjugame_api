@@ -1,2 +1,4 @@
 sanic
 sanic_cors
+numpy
+nlpnet
