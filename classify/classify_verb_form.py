@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
 
-import nlpnet
 import re
 
 from data_structs.verbs import VerbForm, Mood, Tempo, Person, Number
 from typing import Tuple
 
-A0 = 'A0'
+subj_pattern =  re.compile("([a-z]+\se\s[a-z]+)|((^|\s)(nos|eu|voces?|a\sgente|eles?|elas?)($|\s))|((^|\s)(o|a|os|as|esses?|essas?|estas?|estes?)\s+[a-z]+)")
 
-first_person_pattern = re.compile("((^|\s)(nos|eu|a\sgente)($|\s))|(.*([a-z]+\se\seu($|\s))|(eu\se\s[a-z]+).*)")
-plural_pattern = re.compile("((^|\s)(nos|eles|elas|esses|essas)($|\s))|(.*[a-z]+\se\s[a-z]+.*)")
+first_person_pattern = re.compile("(.*(^|\s)(nos|eu|a\sgente)($|\s).*)|(.*([a-z]+\se\seu($|\s))|(eu\se\s[a-z]+).*)")
+plural_pattern = re.compile("(.*(^|\s)(nos|voces|eles|elas|esses|essas)($|\s).*)|(.*[a-z]+\se\s[a-z]+.*)")
 
 class VerbFormClassifier:
     # TODO: Add ctor that pulls in some sort of a universal resource hehe
-    def __init__(self):
-        self.tagger = nlpnet.SRLTagger('models/srl-pt')
 
     # TODO: Enforce that only valid states are returned
     # AKA Valid (Mood, Tempo) tuple
@@ -67,10 +64,11 @@ class VerbFormClassifier:
             after: str
         ) -> str:
         # TODO: Try-Catch
-        return before
-        filled_frame = '{} {} {}'.format(before, infinitive, after)
-        arg_struct = self.tagger.tag(filled_frame)[0].arg_structures
-        for verb, pred_arg_dict in arg_struct:
-            if verb == infinitive and A0 in pred_arg_dict:
-                return ''.join(pred_arg_dict[A0])
-        return before
+        for context_string, match_position in ((before, -1), (after, 0)):
+            context_string = context_string.lower().replace('ó', 'o').replace('ê','e')
+            match_list = subj_pattern.findall(context_string)
+            if len(match_list) > 0:
+                for extracted in match_list[match_position]:
+                    if extracted:
+                        return extracted.strip()
+        return ''
