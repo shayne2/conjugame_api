@@ -11,10 +11,6 @@ first_person_pattern = re.compile("(.*(^|\s)(nos|eu|a\sgente)($|\s).*)|(.*([a-z]
 plural_pattern = re.compile("(.*(^|\s)(nos|voces|eles|elas|esses|essas)($|\s).*)|(.*[a-z]+\se\s[a-z]+.*)")
 
 class VerbFormClassifier:
-    # TODO: Add ctor that pulls in some sort of a universal resource hehe
-
-    # TODO: Enforce that only valid states are returned
-    # AKA Valid (Mood, Tempo) tuple
     def classify_by_frame(
         self,
         before: str,
@@ -24,7 +20,6 @@ class VerbFormClassifier:
         person = self.classify_person(before, infinitive, after)
         number = self.classify_number(before, infinitive, after)
         return VerbForm(
-            # Placeholder
             mood=Mood.INDICATIVE,
             tempo=Tempo.PRESENT,
             person=person,
@@ -63,7 +58,6 @@ class VerbFormClassifier:
             infinitive: str,
             after: str
         ) -> str:
-        # TODO: Try-Catch
         for context_string, match_position in ((before, -1), (after, 0)):
             context_string = context_string.lower().replace('ó', 'o').replace('ê','e')
             match_list = subj_pattern.findall(context_string)

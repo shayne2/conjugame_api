@@ -2,15 +2,16 @@
 
 from data_structs.verbs import VerbForm, Mood, Tempo, Person, Number, \
     person_to_int, number_to_int
+from rules import rule_config as cfg
 from typing import Dict
 import json
 
 class VerbConjugator:
     def __init__(self) -> None:
         # load from text file
-        with open('rules/regular_suffixes/present_indicative.json') as suffix_file:
+        with open(cfg.present_indicative_configs['regular']) as suffix_file:
             self.present_indicative_lookup = json.load(suffix_file)
-        with open('rules/irregular_conjugations/present_indicative.json') as irreg_file:
+        with open(cfg.present_indicative_configs['irregular']) as irreg_file:
             self.present_indicative_irregulars = json.load(irreg_file)
 
     def conjugate_verb(self, infinitive: str, verb_form: VerbForm) -> str:
@@ -74,7 +75,6 @@ class VerbConjugator:
         stem = infinitive[:-2]
         return "{}{}".format(stem, suffix)
 
-    # WHICH??
     def get_past_participle(self, verb: str) -> str:
         raise NotImplementedError
 
@@ -86,6 +86,3 @@ class VerbConjugator:
 
     def conjugate_imperative(self, verb: str, verb_form: VerbForm) -> str:
         raise NotImplementedError
-
-
-# TODO: Custom exception for bad state of mood + tempo combinations
